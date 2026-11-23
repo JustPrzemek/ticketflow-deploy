@@ -1,0 +1,11 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+
+# Never commit plain secrets; only SealedSecrets (ADR-0019)
+.env
+*.unsealed.yaml
