@@ -1,0 +1,31 @@
+# Argo CD manages itself: bootstrap.sh installs this chart version once, from then on an upgrade
+# or a settings change is a commit (the version below or platform/argocd/values.yaml).
+# No resources-finalizer on purpose: deleting this Application must not uninstall Argo CD.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://argoproj.github.io/argo-helm
+      chart: argo-cd
+      targetRevision: 10.18.2
+      helm:
+        releaseName: argocd
+        valueFiles:
+          - $values/platform/argocd/values.yaml
+    - repoURL: https://github.com/JustPrzemek/ticketflow-deploy.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      # Argo CD's CRDs are too large for the annotation that client-side apply stores.
+      - ServerSideApply=true

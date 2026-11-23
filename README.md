@@ -9,8 +9,10 @@ Decision: [ADR-0019](https://github.com/JustPrzemek/ticketflow/blob/main/docs/ad
 environments/
 ├── qa/<service>/values.yaml      # follows main automatically (CI commits the new SHA)
 └── prod/<service>/values.yaml    # changed only by a promotion pull request
-platform/                         # cluster add-ons (Argo CD apps, Sealed Secrets controller)
+platform/                         # Argo CD, Sealed Secrets, the ApplicationSet for services
 ```
+
+New cluster: `./platform/bootstrap.sh` — details in [platform/README.md](platform/README.md).
 
 ## Rules
 
