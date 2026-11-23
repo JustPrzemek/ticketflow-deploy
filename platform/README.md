@@ -28,9 +28,11 @@ Sealed Secrets, the `ticketflow` project, and the services in `qa` and `prod`.
 ## UI
 
 ```bash
-kubectl -n argocd port-forward svc/argocd-server 8080:80        # http://localhost:8080
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+kubectl -n argocd port-forward svc/argocd-server 8080:80        # keeps running; http://localhost:8080
 ```
+
+`port-forward` holds the terminal until Ctrl+C, so it goes last (or into its own terminal).
 
 User `admin`. Change the password after the first login, then delete `argocd-initial-admin-secret`.
 
