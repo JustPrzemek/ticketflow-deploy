@@ -4,5 +4,3 @@ image:
   # Full commit SHA of JustPrzemek/ticketflow: the image tag and the chart revision deployed here.
   # Changed by CI after every merge to main.
   tag: 655d2ee3a6ea4dfa9b07a31384b2e67038cc6174
-
-replicaCount: 2
