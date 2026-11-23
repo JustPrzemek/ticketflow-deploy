@@ -1,0 +1,6 @@
+# Catalog on `prod`. Only what differs from charts/catalog-service/values.yaml in JustPrzemek/ticketflow.
+
+image:
+  # Full commit SHA of JustPrzemek/ticketflow: the image tag and the chart revision deployed here.
+  # Changed only by a pull request that promotes the SHA verified on qa.
+  tag: 655d2ee3a6ea4dfa9b07a31384b2e67038cc6174
