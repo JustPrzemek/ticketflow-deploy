@@ -1,0 +1,4 @@
+[tools]
+# Same versions as mise.toml in JustPrzemek/ticketflow.
+helm = "4.3.2"
+kubectl = "1.36.6"

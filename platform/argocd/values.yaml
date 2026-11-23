@@ -1,0 +1,13 @@
+# Argo CD settings. Only what differs from the argo-cd chart defaults.
+
+configs:
+  params:
+    # Plain HTTP inside the cluster. The UI is reached with `kubectl port-forward` (see README);
+    # TLS is added together with an ingress when one exists.
+    server.insecure: true
+
+# Single sign-on (Dex) and notifications are not used yet: fewer pods on a small node.
+dex:
+  enabled: false
+notifications:
+  enabled: false

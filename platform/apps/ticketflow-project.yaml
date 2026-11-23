@@ -1,0 +1,24 @@
+# Fence for the application services: they may come only from our two repositories and land only
+# in the qa and prod namespaces. A mistake in a values file cannot touch Argo CD or kube-system.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ticketflow
+  namespace: argocd
+  annotations:
+    # Created before the ApplicationSet that refers to it.
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  description: Ticketflow services on qa and prod
+  sourceRepos:
+    - https://github.com/JustPrzemek/ticketflow.git
+    - https://github.com/JustPrzemek/ticketflow-deploy.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: qa
+    - server: https://kubernetes.default.svc
+      namespace: prod
+  # The only cluster-wide object the services may create: their namespace (CreateNamespace=true).
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

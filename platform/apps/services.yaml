@@ -1,0 +1,52 @@
+# One Application per file environments/<env>/<service>/values.yaml, e.g. catalog-service-qa.
+# Adding a service or an environment = adding a values file; nothing to change here.
+#
+# The deployed version is written once, as image.tag in the values file: the same SHA selects
+# the chart revision in JustPrzemek/ticketflow, so the image and the chart always come from
+# one commit (ADR-0019).
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: services
+  namespace: argocd
+spec:
+  goTemplate: true
+  # A values file without image.tag is an error instead of an Application with an empty revision.
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/JustPrzemek/ticketflow-deploy.git
+        revision: main
+        files:
+          - path: environments/*/*/values.yaml
+  template:
+    metadata:
+      # path.segments of environments/qa/catalog-service = [environments, qa, catalog-service]
+      name: "{{ .path.basename }}-{{ index .path.segments 1 }}"
+      finalizers:
+        # Removing a values file removes the service from that environment.
+        - resources-finalizer.argocd.argoproj.io/foreground
+    spec:
+      project: ticketflow
+      sources:
+        - repoURL: https://github.com/JustPrzemek/ticketflow.git
+          targetRevision: "{{ .image.tag }}"
+          path: "charts/{{ .path.basename }}"
+          helm:
+            releaseName: "{{ .path.basename }}"
+            valueFiles:
+              - "$values/{{ .path.path }}/values.yaml"
+        - repoURL: https://github.com/JustPrzemek/ticketflow-deploy.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ index .path.segments 1 }}"
+      syncPolicy:
+        # prod is automated too: it changes only when a promotion pull request is merged.
+        automated:
+          prune: true
+          # Manual changes in the cluster (kubectl edit/scale) are reverted to what Git says.
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
